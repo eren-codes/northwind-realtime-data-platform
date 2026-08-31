@@ -1,0 +1,46 @@
+services:
+  grafana:
+    image: grafana/grafana:12.4.9
+
+    environment:
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_DATE_FORMATS_DEFAULT_TIMEZONE: UTC
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/01_executive_overview.json
+      GF_PLUGINS_PREINSTALL: grafana-clickhouse-datasource@4.21.1
+      CLICKHOUSE_DB: "${CLICKHOUSE_DB}"
+      CLICKHOUSE_USER: "${CLICKHOUSE_USER}"
+      CLICKHOUSE_PASSWORD: "${CLICKHOUSE_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      TZ: UTC
+
+    ports:
+      - "127.0.0.1:3000:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      postgres-staging:
+        condition: service_healthy
+
+    networks:
+      - northwind_net
+
+    restart: unless-stopped
+    mem_limit: 800m
+    cpus: 0.50
+
+volumes:
+  grafana_data:

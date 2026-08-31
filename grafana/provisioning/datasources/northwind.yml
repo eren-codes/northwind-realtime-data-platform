@@ -1,0 +1,49 @@
+apiVersion: 1
+prune: true
+
+datasources:
+  - name: Northwind ClickHouse
+    uid: northwind-clickhouse
+    type: grafana-clickhouse-datasource
+    access: proxy
+    isDefault: true
+    editable: false
+    version: 1
+    jsonData:
+      host: clickhouse
+      port: 8123
+      protocol: http
+      username: "${CLICKHOUSE_USER}"
+      defaultDatabase: "${CLICKHOUSE_DB}"
+      configMode: classic
+      secure: false
+      dialTimeout: 10
+      queryTimeout: 60
+      connMaxLifetime: 5
+      maxIdleConns: 5
+      maxOpenConns: 10
+      validateSql: true
+      enableRowLimit: true
+    secureJsonData:
+      password: "${CLICKHOUSE_PASSWORD}"
+
+  - name: Northwind PostgreSQL Operations
+    uid: northwind-postgres
+    type: postgres
+    access: proxy
+    url: postgres-staging:5432
+    user: "${POSTGRES_USER}"
+    database: "${POSTGRES_DB}"
+    isDefault: false
+    editable: false
+    version: 1
+    jsonData:
+      database: "${POSTGRES_DB}"
+      sslmode: disable
+      postgresVersion: 1700
+      timescaledb: false
+      maxOpenConns: 10
+      maxIdleConns: 5
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: "${POSTGRES_PASSWORD}"

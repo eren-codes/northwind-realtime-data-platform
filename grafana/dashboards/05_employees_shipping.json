@@ -1,0 +1,742 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Employee sales performance, territories, shippers, and service levels.",
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "apps",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "northwind"
+      ],
+      "targetBlank": false,
+      "title": "Northwind Dashboards",
+      "type": "dashboards"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Current Employees",
+      "description": "Provisioned automatically from the project repository.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT count() AS \"Employees\" FROM (SELECT * FROM dim_employee FINAL WHERE is_current = 1)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Shippers",
+      "description": "Provisioned automatically from the project repository.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT count() AS \"Shippers\" FROM (SELECT * FROM dim_shipper FINAL)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "On-Time Shipment Rate",
+      "description": "Provisioned automatically from the project repository.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT round(100 * uniqExactIf(order_id, shipped_date IS NOT NULL AND required_date IS NOT NULL AND shipped_date <= required_date) / nullIf(uniqExactIf(order_id, shipped_date IS NOT NULL AND required_date IS NOT NULL), 0), 2) AS \"On-Time Rate\" FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Average Shipping Days",
+      "description": "Provisioned automatically from the project repository.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "unit": "d"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT round(avg(dateDiff('day', order_date, shipped_date)), 2) AS \"Shipping Days\" FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0) WHERE order_date IS NOT NULL AND shipped_date IS NOT NULL",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "barchart",
+      "title": "Employee Revenue",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT concat(e.first_name, ' ', e.last_name) AS Employee, round(sum(toFloat64(f.unit_price) * toFloat64(f.quantity) * (1 - toFloat64(f.discount))), 2) AS Revenue FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0) AS f INNER JOIN (SELECT * FROM dim_employee FINAL WHERE is_current = 1) AS e ON e.employee_key = f.employee_key GROUP BY Employee ORDER BY Revenue DESC",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "barchart",
+      "title": "Orders by Shipper",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 12,
+        "y": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT s.company_name AS Shipper, uniqExact(f.order_id) AS Orders FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0) AS f LEFT JOIN (SELECT * FROM dim_shipper FINAL) AS s ON s.shipper_key = f.shipper_key GROUP BY Shipper ORDER BY Orders DESC",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "barchart",
+      "title": "Average Shipping Days by Shipper",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "unit": "d"
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT s.company_name AS Shipper, round(avg(dateDiff('day', f.order_date, f.shipped_date)), 2) AS \"Average Days\" FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0) AS f LEFT JOIN (SELECT * FROM dim_shipper FINAL) AS s ON s.shipper_key = f.shipper_key WHERE f.order_date IS NOT NULL AND f.shipped_date IS NOT NULL GROUP BY Shipper ORDER BY \"Average Days\" DESC",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Employee Performance",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 14,
+        "x": 0,
+        "y": 13
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT e.employee_alternate_key AS \"Employee ID\", concat(e.first_name, ' ', e.last_name) AS Employee, coalesce(e.title, '') AS Title, uniqExact(f.order_id) AS Orders, sum(f.quantity) AS Units, round(sum(toFloat64(f.unit_price) * toFloat64(f.quantity) * (1 - toFloat64(f.discount))), 2) AS Revenue, round(avgIf(dateDiff('day', f.order_date, f.shipped_date), f.order_date IS NOT NULL AND f.shipped_date IS NOT NULL), 2) AS \"Avg Shipping Days\" FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0) AS f INNER JOIN (SELECT * FROM dim_employee FINAL WHERE is_current = 1) AS e ON e.employee_key = f.employee_key GROUP BY \"Employee ID\", Employee, Title ORDER BY Revenue DESC",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "Employee Territory Assignments",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 13
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT e.employee_alternate_key AS \"Employee ID\", concat(e.first_name, ' ', e.last_name) AS Employee, t.territory_alternate_key AS \"Territory ID\", coalesce(t.territory_description, '') AS Territory, coalesce(t.region_description, '') AS Region FROM (SELECT * FROM fact_employee_territories FINAL WHERE is_deleted = 0) AS b INNER JOIN (SELECT * FROM dim_employee FINAL WHERE is_current = 1) AS e ON e.employee_key = b.employee_key INNER JOIN (SELECT * FROM dim_territory FINAL WHERE is_current = 1) AS t ON t.territory_key = b.territory_key ORDER BY Employee, Territory",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "Shipper Service Levels",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "northwind-clickhouse"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "northwind-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "pluginVersion": "4.21.1",
+          "queryType": "table",
+          "rawSql": "SELECT s.company_name AS Shipper, uniqExact(f.order_id) AS Orders, uniqExactIf(f.order_id, f.shipped_date <= f.required_date) AS \"On-Time Orders\", round(100 * \"On-Time Orders\" / nullIf(Orders, 0), 2) AS \"On-Time %\", round(avg(dateDiff('day', f.order_date, f.shipped_date)), 2) AS \"Avg Shipping Days\" FROM (SELECT * FROM fact_orders FINAL WHERE is_deleted = 0) AS f LEFT JOIN (SELECT * FROM dim_shipper FINAL) AS s ON s.shipper_key = f.shipper_key WHERE f.shipped_date IS NOT NULL AND f.required_date IS NOT NULL GROUP BY Shipper ORDER BY Orders DESC",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": [
+    "northwind",
+    "data-engineering",
+    "realtime"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "1996-01-01T00:00:00.000Z",
+    "to": "1999-12-31T23:59:59.000Z"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "1h"
+    ]
+  },
+  "timezone": "utc",
+  "title": "Northwind 05 - Employees & Shipping",
+  "uid": "nw-operations",
+  "version": 1,
+  "weekStart": ""
+}
