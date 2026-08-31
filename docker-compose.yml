@@ -1,6 +1,87 @@
 name: northwind-realtime-platform
 
 services:
+  spark-runner:
+    build:
+      context: .
+      dockerfile: docker/spark/Dockerfile
+
+    environment:
+      POSTGRES_HOST: postgres-staging
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_HTTP_PORT: "8123"
+      CLICKHOUSE_DB: "${CLICKHOUSE_DB}"
+      CLICKHOUSE_USER: "${CLICKHOUSE_USER}"
+      CLICKHOUSE_PASSWORD: "${CLICKHOUSE_PASSWORD}"
+
+    depends_on:
+      postgres-staging:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+
+    networks:
+      - northwind_net
+
+    volumes:
+      - ./spark:/opt/spark/work-dir/spark:ro
+
+    profiles:
+      - tools
+
+    restart: "no"
+    mem_limit: 1500m
+    cpus: 1.0
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.3.24.4
+
+    environment:
+      CLICKHOUSE_DB: "${CLICKHOUSE_DB}"
+      CLICKHOUSE_USER: "${CLICKHOUSE_USER}"
+      CLICKHOUSE_PASSWORD: "${CLICKHOUSE_PASSWORD}"
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./sql/clickhouse:/docker-entrypoint-initdb.d:ro
+      - ./docker/clickhouse/config.d/low-memory.xml:/etc/clickhouse-server/config.d/low-memory.xml:ro
+      - ./docker/clickhouse/users.d/low-memory-profile.xml:/etc/clickhouse-server/users.d/low-memory-profile.xml:ro
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          clickhouse-client
+          --host 127.0.0.1
+          --user "$$CLICKHOUSE_USER"
+          --password "$$CLICKHOUSE_PASSWORD"
+          --query "SELECT 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    networks:
+      - northwind_net
+
+    restart: unless-stopped
+
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+    mem_limit: 1600m
+    cpus: 1.0
   etl-runner:
     build:
       context: .
@@ -117,7 +198,7 @@ services:
 volumes:
   mssql_data:
   postgres_staging_data:
-
+  clickhouse_data:
 networks:
   northwind_net:
     driver: bridge
