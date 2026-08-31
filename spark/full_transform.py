@@ -256,7 +256,11 @@ def main() -> None:
             clean_text(F.col("extension")).alias("extension"),
             F.coalesce(F.base64(F.col("photo")), F.lit("")).alias("photo_base64"),
             clean_text(F.col("notes")).alias("notes"),
-            clean_text(F.col("photo_path")).alias("photo_path"),
+            F.concat(
+                F.lit("/data-lake/curated/employee-photos/employee_"),
+                F.col("employee_id").cast("string"),
+                F.lit(".bmp"),
+            ).alias("photo_path"),
         ).withColumn(
             "source_hash",
             row_hash(
