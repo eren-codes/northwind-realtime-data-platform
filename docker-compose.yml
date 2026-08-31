@@ -1,6 +1,43 @@
 name: northwind-realtime-platform
 
 services:
+  etl-runner:
+    build:
+      context: .
+      dockerfile: docker/etl/Dockerfile
+
+    environment:
+      MSSQL_HOST: mssql
+      MSSQL_PORT: "1433"
+      MSSQL_DATABASE: Northwind_OLTP
+      MSSQL_USER: sa
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+
+      POSTGRES_HOST: postgres-staging
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
+    depends_on:
+      mssql:
+        condition: service_healthy
+      postgres-staging:
+        condition: service_healthy
+
+    networks:
+      - northwind_net
+
+    volumes:
+      - ./etl:/app/etl:ro
+
+    profiles:
+      - tools
+
+    restart: "no"
+    mem_limit: 512m
+    cpus: 0.5
+
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
 
@@ -23,7 +60,6 @@ services:
       - northwind_net
 
     restart: unless-stopped
-
     mem_limit: 2500m
     cpus: 1.5
 
@@ -38,8 +74,49 @@ services:
       retries: 15
       start_period: 40s
 
+  postgres-staging:
+    image: postgres:17
+
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+
+    ports:
+      - "127.0.0.1:5433:5432"
+
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+      - ./sql/postgres:/docker-entrypoint-initdb.d:ro
+
+    networks:
+      - northwind_net
+
+    restart: unless-stopped
+    mem_limit: 700m
+    cpus: 0.5
+
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - max_connections=50
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
 volumes:
   mssql_data:
+  postgres_staging_data:
 
 networks:
   northwind_net:
