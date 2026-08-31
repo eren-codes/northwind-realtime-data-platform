@@ -23,3 +23,6 @@ data-lake/curated/
 data-lake/manifests/*.json
 airflow/logs/
 airflow/dags/__pycache__/
+
+# Local transfer archive
+/northwind-grafana-bundle.zip
