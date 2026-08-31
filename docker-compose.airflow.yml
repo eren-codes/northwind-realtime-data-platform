@@ -1,0 +1,54 @@
+services:
+  airflow:
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+
+    command: standalone
+
+    environment:
+      AIRFLOW_HOME: /opt/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__PARALLELISM: "1"
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "1"
+      AIRFLOW__CORE__DEFAULT_TIMEZONE: Asia/Tehran
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      NORTHWIND_PROJECT_DIR: "${NORTHWIND_PROJECT_DIR:-/home/elham/northwind-realtime-data-platform}"
+      TZ: Asia/Tehran
+
+    user: "${AIRFLOW_UID:-50000}:0"
+    group_add:
+      - "${DOCKER_GID:-999}"
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./airflow/dags:/opt/airflow/dags:ro
+      - ./airflow/logs:/opt/airflow/logs
+      - "${NORTHWIND_PROJECT_DIR:-/home/elham/northwind-realtime-data-platform}:${NORTHWIND_PROJECT_DIR:-/home/elham/northwind-realtime-data-platform}:ro"
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    working_dir: "${NORTHWIND_PROJECT_DIR:-/home/elham/northwind-realtime-data-platform}"
+
+    depends_on:
+      mssql:
+        condition: service_healthy
+      postgres-staging:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+
+    networks:
+      - northwind_net
+
+    restart: unless-stopped
+    stop_grace_period: 1m
+    mem_limit: 1400m
+    cpus: 1.0
+
+volumes:
+  airflow_data:

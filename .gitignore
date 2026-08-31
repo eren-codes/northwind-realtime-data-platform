@@ -21,3 +21,5 @@ Thumbs.db
 data-lake/raw/
 data-lake/curated/
 data-lake/manifests/*.json
+airflow/logs/
+airflow/dags/__pycache__/
