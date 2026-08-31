@@ -1,0 +1,4 @@
+pymssql==2.3.13
+psycopg[binary]==3.3.4
+confluent-kafka==2.15.0
+pymongo==4.15.0
