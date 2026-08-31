@@ -1,0 +1,46 @@
+name: northwind-realtime-platform
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+      MSSQL_MEMORY_LIMIT_MB: "2048"
+      MSSQL_AGENT_ENABLED: "true"
+
+    ports:
+      - "127.0.0.1:1433:1433"
+
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - ./database/backup:/var/opt/mssql/backup:ro
+      - ./sql/mssql:/scripts:ro
+
+    networks:
+      - northwind_net
+
+    restart: unless-stopped
+
+    mem_limit: 2500m
+    cpus: 1.5
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -C -Q \"SELECT 1\" || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 40s
+
+volumes:
+  mssql_data:
+
+networks:
+  northwind_net:
+    driver: bridge
