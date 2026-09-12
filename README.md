@@ -127,25 +127,22 @@ Six dashboards are provisioned from version-controlled JSON: Executive Overview,
 
 High-level revenue, order, customer, product, and fulfillment indicators provide an immediate business summary.
 
-![Northwind executive overview dashboard](docs/images/executive-overview.png)
+<img width="1668" height="827" alt="image" src="https://github.com/user-attachments/assets/2e46bef1-1262-4409-b7c9-d91118548111" />
+
 
 ### Sales Trends
 
 Time-series and seasonality views explain revenue, order volume, discounts, and fulfillment performance.
 
-![Northwind sales trends dashboard](docs/images/sales-trends.png)
+<img width="1666" height="798" alt="image" src="https://github.com/user-attachments/assets/70b78f59-d84d-45f6-b622-525a3438db9d" />
+
 
 ### Product Performance
 
 Product and category views expose revenue concentration, units sold, inventory value, supplier contribution, and reorder risk.
 
-![Northwind product performance dashboard](docs/images/product-performance.png)
+<img width="1642" height="841" alt="image" src="https://github.com/user-attachments/assets/9344c357-b55f-4e0c-96fa-0ecf44686403" />
 
-### Real-Time Pipeline Health
-
-Operational panels surface CDC throughput, pending work, processing errors, latency, service state, recent runs, and quality results.
-
-![Northwind real-time pipeline health dashboard](docs/images/pipeline-health.png)
 
 ## Repository layout
 
