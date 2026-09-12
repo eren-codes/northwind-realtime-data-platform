@@ -26,3 +26,8 @@ airflow/dags/__pycache__/
 
 # Local transfer archive
 /northwind-grafana-bundle.zip
+
+# Generated video artifacts
+/artifacts/linkedin/
+*.mp4
+*.webm
