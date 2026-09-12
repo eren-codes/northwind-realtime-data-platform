@@ -234,7 +234,3 @@ Verify warehouse contents with [`sql/clickhouse/02_verify_full_transform.sql`](s
 - failed Kafka events are routed to a dead-letter topic;
 - raw events and run history remain available for audit and recovery;
 - generated MP4/WebM showcase files are excluded from Git.
-
-## Portfolio video
-
-Scripts under [`scripts`](scripts) create a 4:5 LinkedIn showcase combining the project story, architecture, live Operations Console pages, and Grafana. Generated videos stay local under `artifacts/linkedin/` and are not committed.
