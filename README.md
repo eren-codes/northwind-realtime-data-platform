@@ -2,7 +2,6 @@
 
 An end-to-end data engineering platform that turns operational changes in the Northwind database into replayable events, analytics-ready warehouse tables, business dashboards, and live operational telemetry.
 
-Built by **Elham Partovi** at **Sematec**, under the instruction of **Vahid Ghorbani**.
 
 ## Why this project exists
 
